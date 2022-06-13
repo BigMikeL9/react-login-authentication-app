@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import MainHeader from "./components/MainHeader/MainHeader";
+import AuthContext from "./components/contexts/authContext";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // -- 🔵 Moved to 'authContext.js' [to have authentication in one place] --
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // -------------------------------------
   /* - This will cause an INFINITE loop, because 'localStorage_LogInStatus' is equal to '1' after we stored it in local storage.
@@ -27,39 +29,47 @@ function App() {
         - The 'useEffect' hook itself runs with every Render, but the first argument function executes ONLY if the specified dependencies change. Since no dependencies are specified, the first argument function will NOT be executed with every re-render after the app starts.  
         👇👇👇
 */
-  useEffect(() => {
-    const localStorage_LogInStatus = +localStorage.getItem("isLoggedIn");
 
-    if (localStorage_LogInStatus === 1) {
-      console.log("LOGGED IN 💃💃");
-      setIsLoggedIn(true);
-    }
-  }, []);
+  // -- 🔵 Moved to 'authContext.js' [to have authentication in one place] --
+  // useEffect(() => {
+  //   const localStorage_LogInStatus = +localStorage.getItem("isLoggedIn");
+
+  //   if (localStorage_LogInStatus === 1) {
+  //     console.log("LOGGED IN 💃💃");
+  //     setIsLoggedIn(true);
+  //   }
+  // }, []);
   // -------------------------------------
 
-  const loginHandler = (email, password) => {
-    // - Browser has multiple storages we can use. Most common for this case, is cookies storage or Local storage.
-    // - We'll use local storage because it is easy to work with (built-into the browser). Can access local storage in browser through the 'application' tab
-    // - Storing 'isLoggedIn' state value in local storage using -> 'localStorage' GLOBAL object, available in the browser.
-    localStorage.setItem("isLoggedIn", "1"); //    --> value of '1' means LOGGED IN 🟢.
+  // -- 🔵 Moved to 'authContext.js' [to have authentication in one place] --
+  // const loginHandler = (email, password) => {
+  //   // - Browser has multiple storages we can use. Most common for this case, is cookies storage or Local storage.
+  //   // - We'll use local storage because it is easy to work with (built-into the browser). Can access local storage in browser through the 'application' tab
+  //   // - Storing 'isLoggedIn' state value in local storage using -> 'localStorage' GLOBAL object, available in the browser.
+  //   localStorage.setItem("isLoggedIn", "1"); //    --> value of '1' means LOGGED IN 🟢.
 
-    setIsLoggedIn(true);
-  };
+  //   setIsLoggedIn(true);
+  // };
 
-  const logoutHandler = () => {
-    localStorage.setItem("isLoggedIn", "0"); //    --> value of '0' means NOT LOGGED IN 🔴.
+  // -- 🔵 Moved to 'authContext.js' [to have authentication in one place] --
+  // const logoutHandler = () => {
+  //   localStorage.setItem("isLoggedIn", "0"); //    --> value of '0' means NOT LOGGED IN 🔴.
 
-    setIsLoggedIn(false);
-  };
+  //   setIsLoggedIn(false);
+  // };
+
+  // -- 🟠 using 'useContext'
+  const authContextData = useContext(AuthContext);
+  console.log(authContextData);
 
   return (
-    <React.Fragment>
-      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+    <>
+      <MainHeader />
       <main>
-        {!isLoggedIn && <Login onLogin={loginHandler} />}
-        {isLoggedIn && <Home onLogout={logoutHandler} />}
+        {!authContextData.isLoggedIn && <Login />}
+        {authContextData.isLoggedIn && <Home />}
       </main>
-    </React.Fragment>
+    </>
   );
 }
 
