@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import MainHeader from "./components/MainHeader/MainHeader";
-import AuthContext from "./components/contexts/authContext";
+import AuthContext from "./contexts/authContext";
 
 function App() {
   // -- 🔵 Moved to 'authContext.js' [to have authentication in one place] --
@@ -60,7 +60,7 @@ function App() {
 
   // -- 🟠 using 'useContext'
   const authContextData = useContext(AuthContext);
-  console.log(authContextData);
+  // console.log(authContextData);
 
   return (
     <>

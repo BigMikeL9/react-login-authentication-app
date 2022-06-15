@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useRef,
+} from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
-import AuthContext from "../contexts/authContext";
+import AuthContext from "../../contexts/authContext";
+import Input from "../Input/Input";
 
 // ---------------------------
 // 🔵 -- using 'useReducer' Hook --
 const reducerEmail = (state, action) => {
-  // console.log(state);
-  // console.log(action);
   if (action.type === "EMAIL_INPUT") {
     return { value: action.value, isValid: action.value.includes("@") };
   }
@@ -22,28 +27,28 @@ const reducerEmail = (state, action) => {
   return { value: "", isValid: false };
 };
 
+// ---
 const initialEmailState = { value: "", isValid: null };
 
-// -----
+// ----------
 const reducerPassword = (state, action) => {
-  // console.log(state);
-  // console.log(action);
-
   if (action.type === "PASSWORD_INPUT") {
     return { value: action.value, isValid: action.value.length > 6 };
   }
 
   if (action.type === "PASSWORD_BLUR") {
+    // using LATEST state
     return { value: state.value, isValid: state.value.length > 6 };
   }
 
   return { value: "", isValid: null };
 };
 
+// ---
 const initialPasswordState = { value: "", isValid: null };
 
 // ------------------------------------------------------
-const Login = (props) => {
+const Login = () => {
   // ---------------------------
   // 🟠 -- using 'useState' --
   // const [enteredEmail, setEnteredEmail] = useState("");
@@ -79,14 +84,16 @@ const Login = (props) => {
   useEffect(() => {
     const runLater = setTimeout(() => {
       console.log("Debouncing -- Checking Form Validity!!!");
+
       setFormIsValid(emailIsValid && passwordIsValid);
+
       console.log(emailIsValid, passwordIsValid);
     }, 500);
 
     // -- 'Cleanup' function inside 'Side Effect' function 👇
     return () => {
       console.log("CLEANUP");
-      // cancels the timeout of previously executed side Effect function (ie: the 'runLater' function) as long as use types
+      // -- cancels the timeout of previously executed side Effect function (ie: the 'runLater' function) as long as use types
       clearTimeout(runLater);
     };
   }, [emailIsValid, passwordIsValid]);
@@ -128,12 +135,27 @@ const Login = (props) => {
     // setPasswordIsValid(enteredPassword.trim().length > 6);
   };
 
+  // ---------------------------
+  // -- 🟡 'Forwarding refs' ->  Creating References to component function elements
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+
+  // ---------------------------
   const submitHandler = (event) => {
     event.preventDefault();
-    authContextData.onLogin(email.value, password.value);
 
-    // 🟠 -- using 'useState' --
-    // props.onLogin(enteredEmail, enteredPassword);
+    if (formIsValid) {
+      // -- 🔵 using 'useContext'
+      authContextData.onLogin(email.value, password.value);
+
+      // 🟠 -- using 'useState' --
+      // props.onLogin(enteredEmail, enteredPassword);
+    } else if (!emailIsValid) {
+      // -- 🟡 'Forwarding refs' ->  focus email input if invalid
+      emailInputRef.current.focus();
+    } else {
+      passwordInputRef.current.focus();
+    }
   };
 
   // -- 🔵 using 'useContext'
@@ -142,7 +164,29 @@ const Login = (props) => {
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
-        <div
+        <Input
+          ref={emailInputRef}
+          isValid={emailIsValid}
+          value={email.value}
+          id="email"
+          label="E-mail"
+          type="email"
+          onChange={emailChangeHandler}
+          onBlur={validateEmailHandler}
+        />
+
+        <Input
+          ref={passwordInputRef}
+          isValid={passwordIsValid}
+          value={password.value}
+          id="password"
+          label="Password"
+          type="password"
+          onChange={passwordChangeHandler}
+          onBlur={validatePasswordHandler}
+        />
+
+        {/* <div
           className={`${classes.control} ${
             email.isValid === false ? classes.invalid : ""
           }`}
@@ -170,10 +214,10 @@ const Login = (props) => {
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
-        </div>
+        </div> */}
 
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>

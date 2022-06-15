@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 
 // -----
 // --- Good practice to make the 'createContext' defaultValue similar to what is passed in the 'value={ ... }' prop in the Provider.

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Card from "../UI/Card/Card";
 import Button from "../UI/Button/Button";
-import AuthContext from "../contexts/authContext";
+import AuthContext from "../../contexts/authContext";
 
 import classes from "./Home.module.css";
 
